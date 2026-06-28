@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="AURA — a modern, voice-enabled AI assistant experience."
+    />
+    <meta name="theme-color" content="#07111f" />
+    <title>AURA — AI Assistant</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <canvas id="particleCanvas" aria-hidden="true"></canvas>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="AURA home">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span>
+          </span>
+          <span class="brand-name">AURA</span>
+          <span class="brand-version">01</span>
+        </a>
+
+        <div class="system-status" id="aiStatusIndicator" aria-live="polite">
+          <span class="status-pulse" aria-hidden="true"></span>
+          <span id="aiStatusText">Checking AI</span>
+        </div>
+
+        <nav class="top-actions" aria-label="Assistant controls">
+          <button
+            class="icon-button"
+            id="soundButton"
+            type="button"
+            aria-label="Enable interface sounds"
+            aria-pressed="false"
+            data-tooltip="Sound"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+              <path class="sound-wave" d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+              <path class="sound-wave" d="M18 6a8.5 8.5 0 0 1 0 12"></path>
+            </svg>
+          </button>
+          <button
+            class="icon-button"
+            id="voiceButton"
+            type="button"
+            aria-label="Disable voice replies"
+            aria-pressed="true"
+            data-tooltip="Voice replies"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5a4 4 0 0 0-4 4v2a4 4 0 0 0 8 0V9a4 4 0 0 0-4-4Z"></path>
+              <path d="M5 11a7 7 0 0 0 14 0"></path>
+              <path d="M12 18v3M9 21h6"></path>
+              <path class="voice-wave" d="M18 6.5a5.5 5.5 0 0 1 0 7"></path>
+            </svg>
+          </button>
+          <button
+            class="icon-button"
+            id="historyButton"
+            type="button"
+            aria-label="Open conversation history"
+            aria-expanded="false"
+            data-tooltip="History"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path>
+              <path d="M3 3v5h5M12 7v5l3 2"></path>
+            </svg>
+          </button>
+        </nav>
+      </header>
+
+      <section class="assistant-stage" aria-labelledby="assistantTitle">
+        <div class="mode-tag">
+          <span aria-hidden="true">✦</span>
+          <span id="modeLabel">Ambient intelligence</span>
+        </div>
+
+        <div class="orb-wrap" id="orbWrap">
+          <div class="orbit orbit-outer" aria-hidden="true">
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
+          <div class="orbit orbit-inner" aria-hidden="true"></div>
+          <div class="orb-halo" aria-hidden="true"></div>
+          <button
+            class="orb"
+            id="orb"
+            type="button"
+            aria-label="Activate voice assistant"
+          >
+            <span class="orb-surface"></span>
+            <span class="orb-fluid orb-fluid-one"></span>
+            <span class="orb-fluid orb-fluid-two"></span>
+            <span class="orb-glint"></span>
+            <span class="orb-depth"></span>
+          </button>
+          <div class="orb-reflection" aria-hidden="true"></div>
+        </div>
+
+        <div class="assistant-copy">
+          <p class="eyebrow" id="stateEyebrow">AURA IS READY</p>
+          <h1 id="assistantTitle">How can I help?</h1>
+          <p class="assistant-subtitle" id="assistantSubtitle">
+            Ask anything, or tap the orb to speak.
+          </p>
+        </div>
+
+        <div class="waveform" id="waveform" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+
+        <form class="prompt-bar" id="promptForm">
+          <button
+            class="prompt-action attachment-button"
+            type="button"
+            aria-label="Add attachment"
+            data-tooltip="Attach"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m12 5-6.5 6.5a4 4 0 0 0 5.7 5.7l7.5-7.5a2.8 2.8 0 0 0-4-4l-7.4 7.4a1.5 1.5 0 1 0 2.1 2.1l6.5-6.5"></path>
+            </svg>
+          </button>
+          <label class="sr-only" for="promptInput">Message AURA</label>
+          <input
+            id="promptInput"
+            name="prompt"
+            type="text"
+            autocomplete="off"
+            placeholder="Message AURA..."
+          />
+          <span class="shortcut" aria-hidden="true">⌘ K</span>
+          <button
+            class="prompt-action mic-button"
+            id="micButton"
+            type="button"
+            aria-label="Start voice input"
+            data-tooltip="Speak"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="3" width="6" height="12" rx="3"></rect>
+              <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6"></path>
+            </svg>
+          </button>
+          <button
+            class="send-button"
+            id="sendButton"
+            type="submit"
+            aria-label="Send message"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m5 12 14-7-5 14-2.5-4.5L5 12Z"></path>
+              <path d="M11.5 14.5 19 5"></path>
+            </svg>
+          </button>
+        </form>
+
+        <div class="suggestions" aria-label="Suggested prompts">
+          <button type="button" data-prompt="Plan my day">
+            <span>01</span> Plan my day
+          </button>
+          <button type="button" data-prompt="Spark an idea">
+            <span>02</span> Spark an idea
+          </button>
+          <button type="button" data-prompt="Help me focus">
+            <span>03</span> Help me focus
+          </button>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p><span>●</span> Private by design</p>
+        <p class="coordinates">14.5995° N &nbsp; 120.9842° E</p>
+        <p>AI model <strong>GPT-4.1</strong></p>
+      </footer>
+    </main>
+
+    <aside class="history-panel" id="historyPanel" aria-hidden="true" inert>
+      <div class="history-header">
+        <div>
+          <p class="eyebrow">MEMORY STREAM</p>
+          <h2>Conversation</h2>
+        </div>
+        <button class="icon-button" id="closeHistoryButton" aria-label="Close history">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="message-list" id="messageList" aria-live="polite">
+        <article class="message assistant-message">
+          <div class="message-orb" aria-hidden="true"></div>
+          <div>
+            <p class="message-meta">AURA · NOW</p>
+            <p>Hello. I’m here and ready when you are.</p>
+          </div>
+        </article>
+      </div>
+      <button class="clear-button" id="clearHistoryButton" type="button">
+        Clear conversation
+      </button>
+    </aside>
+    <div class="panel-backdrop" id="panelBackdrop" aria-hidden="true"></div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
